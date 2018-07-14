@@ -4,15 +4,29 @@ import java.util.NoSuchElementException;
 
 public class AuxiliarydiagonalTraversal implements MatrixTraverser {
     private int m,n,x,y,k,cnt; //(x,y) is the current cell, k == (x+y)
+    private int [][]id;
+
+    private void reset() {
+        x= m-1; y= 0; k= y-x; cnt= 0;
+    }
+
     /**
      * @param m: number of rows
      * @param n: number of columns
      */
     public AuxiliarydiagonalTraversal( int m, int n ) {
-        x= m-1; y= 0; k= y-x;
         this.m= m; this.n= n;
-        cnt= 0;
+        reset();
         assert m >= 0 && n >= 0;
+        id= new int[m][n];
+        int idx= 0;
+        for ( int i= 0; i < m; ++i )
+            for ( int j= 0; j < n; ++j ) {
+                id[x][y]= idx++;
+                if ( hasNext() )
+                    next();
+            }
+        reset();
     }
 
     /**
@@ -48,7 +62,33 @@ public class AuxiliarydiagonalTraversal implements MatrixTraverser {
                 }
             }
         }
-        assert vc(x,y): String.format("%d %d",x,y);
+        assert vc(x,y);
+        return res;
+    }
+
+    @Override
+    public boolean areAdjacent(Pair<Integer, Integer> a, Pair<Integer, Integer> b) {
+        if ( a == null || b == null ) return false ;
+        Pair<Integer,Integer> na= next(a.getX(),a.getY());
+        Pair<Integer,Integer> nb= next(b.getX(),b.getY());
+        return na.equals(b) || nb.equals(a);
+    }
+
+    private Pair<Integer,Integer> next( int x, int y ) {
+        Pair<Integer,Integer> res= null;
+        if ( vc(x,y) && id[x][y] < m*n-1 ) {
+            ++x; ++y;
+            if ( !vc(x,y) ) {
+                ++k;
+                y= 0; x= y-k;
+                if ( !vc(x,y) ) {
+                    x= 0;
+                    y= k+x;
+                }
+            }
+            res= new Pair<>(x,y);
+        }
+        assert vc(x,y);
         return res;
     }
 
