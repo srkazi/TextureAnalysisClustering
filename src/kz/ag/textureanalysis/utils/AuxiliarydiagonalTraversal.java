@@ -2,15 +2,16 @@ package kz.ag.textureanalysis.utils;
 
 import java.util.NoSuchElementException;
 
-public class MaindiagonalTraverser implements MatrixTraverser {
+public class AuxiliarydiagonalTraversal implements MatrixTraverser {
     private int m,n,x,y,k,cnt; //(x,y) is the current cell, k == (x+y)
     /**
      * @param m: number of rows
      * @param n: number of columns
      */
-    public MaindiagonalTraverser( int m, int n ) {
-        x= y= 0; k= x+y; cnt= 0;
+    public AuxiliarydiagonalTraversal( int m, int n ) {
+        x= m-1; y= 0; k= y-x;
         this.m= m; this.n= n;
+        cnt= 0;
         assert m >= 0 && n >= 0;
     }
 
@@ -37,18 +38,21 @@ public class MaindiagonalTraverser implements MatrixTraverser {
         Pair<Integer,Integer> res= new Pair<>(x,y);
         ++cnt;
         if ( hasNext() ) {
-            --y; ++x;
-            if ( y < 0 || x >= m ) {
+            ++x; ++y;
+            if ( !vc(x,y) ) {
                 ++k;
-                x = 0;
-                y = k - x;
-                if (y >= n) {
-                    y = n - 1;
-                    x = k - x;
+                y= 0; x= y-k;
+                if ( !vc(x,y) ) {
+                    x= 0;
+                    y= k+x;
                 }
             }
         }
-        assert 0 <= x && x < m && 0 <= y && y < n;
+        assert vc(x,y): String.format("%d %d",x,y);
         return res;
+    }
+
+    private boolean vc(int x, int y) {
+        return 0 <= x && x < m && 0 <= y && y < n;
     }
 }

@@ -35,9 +35,11 @@ public class RowwiseTraverser implements MatrixTraverser {
     @Override
     public Pair<Integer, Integer> next() {
         Pair<Integer,Integer> res= new Pair<>(x,y);
-        if ( ++y == n ) {
-            y= 0;
-            ++x;
+        if ( hasNext() ) {
+            if (++y == n) {
+                y = 0;
+                ++x;
+            }
         }
         return res;
     }

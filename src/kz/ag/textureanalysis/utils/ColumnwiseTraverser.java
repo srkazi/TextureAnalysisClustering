@@ -36,9 +36,11 @@ public class ColumnwiseTraverser implements MatrixTraverser {
     @Override
     public Pair<Integer, Integer> next() {
         Pair<Integer,Integer> res= new Pair<>(x,y);
-        if ( ++x == m ) {
-            x= 0;
-            ++y;
+        if ( hasNext() ) {
+            if (++x == m) {
+                x = 0;
+                ++y;
+            }
         }
         return res;
     }
