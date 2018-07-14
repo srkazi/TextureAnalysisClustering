@@ -1,4 +1,5 @@
 /*
+ * [Haralick Textural Features](http://earlglynn.github.io/RNotes/package/EBImage/Haralick-Textural-Features.html)
  */
 import ij.*;
 import ij.plugin.filter.PlugInFilter;
@@ -20,7 +21,7 @@ enum TextureFeatures {
     SUM_AVERAGE("Sum Average"),
     SUM_VARIANCE("Sum Variance"),
     SUM_ENTROPY("Sum Entropy"),
-    ENTRPY("Entropy"),
+    ENTROPY("Entropy"),
     DIFFERENCE_VARIANCE("Difference Variance"),
     DIFFERENCE_ENTROPY("Difference Entropy"),
     F12("Information Measure of Correlation: f12"),
@@ -40,8 +41,9 @@ enum TextureFeatures {
 
 public class TextureAnalyzer_AG implements PlugInFilter {
 
-    private static final int STEP= 1;
+    private static final int STEP= 1, oo= (1<<30);
     private static int step;
+    private ResultsTable resultsTable;
 
     private Map<TextureFeatures,Boolean> checked= null;
 
@@ -62,6 +64,8 @@ public class TextureAnalyzer_AG implements PlugInFilter {
     }
 
     public void run( ImageProcessor ip ) {
+        //TODO
+        int m= ip.getHeight(), n= ip.getWidth();
     }
 
     boolean showDialog() {
