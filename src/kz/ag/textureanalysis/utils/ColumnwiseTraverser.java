@@ -4,13 +4,13 @@ import java.util.NoSuchElementException;
 import java.util.function.Consumer;
 
 public class ColumnwiseTraverser implements MatrixTraverser {
-    private int m,n,x,y; //(x,y) is the current cell
+    private int m,n,x,y, cnt; //(x,y) is the current cell
     /**
      * @param m: number of rows
      * @param n: number of columns
      */
     public ColumnwiseTraverser( int m, int n ) {
-        x= y= 0;
+        x= y= 0; cnt= 0;
         this.m= m; this.n= n;
         assert m >= 0 && n >= 0;
     }
@@ -24,7 +24,7 @@ public class ColumnwiseTraverser implements MatrixTraverser {
      */
     @Override
     public boolean hasNext() {
-        return !(x == m-1 && y == n-1);
+        return cnt < m*n;
     }
 
     /**
@@ -36,6 +36,7 @@ public class ColumnwiseTraverser implements MatrixTraverser {
     @Override
     public Pair<Integer, Integer> next() {
         Pair<Integer,Integer> res= new Pair<>(x,y);
+        ++cnt;
         if ( hasNext() ) {
             if (++x == m) {
                 x = 0;

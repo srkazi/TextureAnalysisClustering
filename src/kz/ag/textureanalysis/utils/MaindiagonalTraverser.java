@@ -38,17 +38,21 @@ public class MaindiagonalTraverser implements MatrixTraverser {
         ++cnt;
         if ( hasNext() ) {
             --y; ++x;
-            if ( y < 0 || x >= m ) {
+            if ( !vc(x,y) ) {
                 ++k;
                 x = 0;
                 y = k - x;
-                if (y >= n) {
+                if ( !vc(x,y) ) {
                     y = n - 1;
-                    x = k - x;
+                    x = k - y;
                 }
             }
         }
-        assert 0 <= x && x < m && 0 <= y && y < n;
+        assert vc(x,y);
         return res;
+    }
+
+    private boolean vc( int x, int y ) {
+        return  0<=x && x<m && 0<=y && y<n;
     }
 }
