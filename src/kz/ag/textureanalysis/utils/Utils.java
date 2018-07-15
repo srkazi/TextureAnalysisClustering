@@ -1,6 +1,7 @@
 package kz.ag.textureanalysis.utils;
 
 public class Utils {
+    public static final double eps= 1e-7;
     /*
     * This is useless code, already served by the implementation-classes themselves
     public static <T extends MatrixTraverser> boolean areAdjacent( Pair<Integer,Integer> a, Pair<Integer,Integer> b, Class<T> cl ) {
