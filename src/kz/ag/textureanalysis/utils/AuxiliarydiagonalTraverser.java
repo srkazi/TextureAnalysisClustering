@@ -4,10 +4,11 @@ import java.util.NoSuchElementException;
 
 public class AuxiliarydiagonalTraverser implements MatrixTraverser {
     private int m,n,x,y,k,cnt; //(x,y) is the current cell, k == (x+y)
+    private boolean flag;
     private int [][]id;
 
     private void reset() {
-        x= m-1; y= 0; k= y-x; cnt= 0;
+        x= m-1; y= 0; k= y-x; cnt= 0; flag= false;
     }
 
     /**
@@ -55,14 +56,22 @@ public class AuxiliarydiagonalTraverser implements MatrixTraverser {
             ++x; ++y;
             if ( !vc(x,y) ) {
                 ++k;
-                y= 0; x= y-k;
-                if ( !vc(x,y) ) {
+                if ( flag ) {
                     x= 0;
                     y= k+x;
                 }
+                else {
+                    y = 0;
+                    x = y - k;
+                    if (!vc(x, y)) {
+                        flag = true;
+                        x = 0;
+                        y = k + x;
+                    }
+                }
             }
         }
-        assert vc(x,y);
+        assert vc(x,y): System.out.printf("(x,y) = (%d,%d), while k = %d, cnt= %d, m*n = %d, flag= %s\n",x,y,k,cnt,m*n,flag);
         return res;
     }
 
@@ -77,13 +86,22 @@ public class AuxiliarydiagonalTraverser implements MatrixTraverser {
     private Pair<Integer,Integer> next( int x, int y ) {
         Pair<Integer,Integer> res= null;
         if ( vc(x,y) && id[x][y] < m*n-1 ) {
+            k= y-x;
             ++x; ++y;
             if ( !vc(x,y) ) {
                 ++k;
-                y= 0; x= y-k;
-                if ( !vc(x,y) ) {
+                if ( flag ) {
                     x= 0;
                     y= k+x;
+                }
+                else {
+                    y = 0;
+                    x = y - k;
+                    if (!vc(x, y)) {
+                        flag = true;
+                        x = 0;
+                        y = k + x;
+                    }
                 }
             }
             res= new Pair<>(x,y);

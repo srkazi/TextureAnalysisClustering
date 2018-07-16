@@ -1,3 +1,4 @@
+import com.sun.deploy.ui.UITextArea;
 import ij.*;
 import ij.plugin.filter.PlugInFilter;
 import ij.process.*;
@@ -13,7 +14,7 @@ import kz.ag.textureanalysis.utils.TraverserFactory;
 import kz.ag.textureanalysis.utils.Utils;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 
-public class BasicPreprocessor<T extends MatrixTraverser> {
+public class BasicPreprocessor {
 
     private final ImageProcessor ip;
     private int m, n, mi, mx, H;
@@ -26,10 +27,12 @@ public class BasicPreprocessor<T extends MatrixTraverser> {
     private DescriptiveStatistics statsPXY= new DescriptiveStatistics();
     private DescriptiveStatistics statsPij= new DescriptiveStatistics();
 
+    <T extends MatrixTraverser>
     BasicPreprocessor( ImageProcessor ip, Class<T> traverserImplClass ) {
         assert ip != null;
         this.ip = ip;
         traverser= TraverserFactory.buildTraverser(traverserImplClass,m= ip.getHeight(),n= ip.getWidth());
+        System.out.printf("m= %d, n= %d\n",m,n);
         setUp();
     }
 
@@ -44,17 +47,19 @@ public class BasicPreprocessor<T extends MatrixTraverser> {
         /**
          * Trying to make H = 2^k, and H >= mx+1
          */
-        if ( 0 == ((mx+1)&(mx)) ) // if mx is already power of two
-            H= mx;
+        if ( 0 == ((mx+1)&(mx)) ) // if mx+1 is already power of two
+            H= mx+1;
         else {
             for ( H= 0; (1<<H) < (mx+1); ++H ) ;
             H= (1<<H);
         }
-        assert 0 == (H & (H-1));
-        counts = new double[0][H];
-        probabilities = new double[0][H];
-        px= new double[m];
-        py= new double[n];
+        assert 0 == (H & (H-1)): String.format("mi= %d, mx= %d, H is not power of two: %d\n",mi,mx,H);
+        counts = new double[H][H];
+        probabilities = new double[H][H];
+        px= new double[H];
+        py= new double[H];
+        p_xpy= new double[2*H-1];
+        p_xmy= new double[H];
         populateCounts();
         calculateEntropies();
         calcSummary();
@@ -70,6 +75,7 @@ public class BasicPreprocessor<T extends MatrixTraverser> {
             if ( traverser.areAdjacent(prev,cur) ) {
                 int x= ip.getPixel(cur.getX(),cur.getY());
                 int y= ip.getPixel(prev.getX(),prev.getY());
+                assert( !(x >= H || x < 0 || y >= H || y < 0) ): String.format("(%d,%d) is out of bounds",x,y);
                 ++counts[x][y];
                 ++counts[y][x];
             }
@@ -97,40 +103,40 @@ public class BasicPreprocessor<T extends MatrixTraverser> {
         for ( int j= 0; j < H; statsPy.addValue(py[j++]) ) ;
 
         for ( int k= 0; k < 2*H-1; ++k )
-            for ( int i= 0, j; i < H; ++i ) {
-                j= k-i;
-                if ( 0 <= j && j < H )
+            for ( int i= 0, j; i < H; ++i )
+                if ( 0 <= (j= (k-i)) && j < H )
                     p_xpy[k]+= probabilities[i][j];
-            }
+
         for ( int k= 0; k < 2*H-1; statsPXY.addValue(p_xpy[k++]) ) ;
 
         for ( int k= 0; k < H; ++k )
             for ( int i= 0, j; i < H; ++i ) {
                 if ( 0 <= (j= (i-k)) && j < H )
                     p_xmy[k]+= probabilities[i][j];
-                if ( 0 <= (j= (i+j)) && j < H )
+                if ( 0 <= (j= (i+k)) && j < H )
                     p_xmy[k]+= probabilities[i][j];
             }
     }
 
     private void calculateEntropies() {
+        HX= HY= HXY= HXY1= HXY2= 0;
         for ( int i= 0; i < H; ++i )
-            HX+= px[i]*Math.log(px[i]);
+            HX+= Math.abs(px[i])>Utils.eps?px[i]*Math.log(px[i]):0;
         HX= -HX/Math.log(2);
         for ( int j= 0; j < H; ++j )
-            HY+= py[j]*Math.log(py[j]);
+            HY+= Math.abs(py[j])>Utils.eps?py[j]*Math.log(py[j]):0;
         HY= -HY/Math.log(2);
         for ( int i= 0; i < H; ++i )
             for ( int j= 0; j < H; ++j )
-                HXY+= probabilities[i][j]*Math.log(probabilities[i][j]);
+                HXY+= Math.abs(probabilities[i][j])>Utils.eps?probabilities[i][j]*Math.log(probabilities[i][j]):0;
         HXY= -HXY/Math.log(2);
         for ( int i= 0; i < H; ++i )
             for ( int j= 0; j < H; ++j )
-                HXY1+= probabilities[i][j]*Math.log(px[i]*py[j]);
+                HXY1+= Math.abs(px[i]*py[j])>Utils.eps?probabilities[i][j]*Math.log(px[i]*py[j]):0;
         HXY1= -HXY1/Math.log(2);
         for ( int i= 0; i < H; ++i )
             for ( int j= 0; j < H; ++j )
-                HXY2+= px[i]*py[j]*Math.log(px[i]*py[j]);
+                HXY2+= Math.abs(px[i]*py[j])>Utils.eps?px[i]*py[j]*Math.log(px[i]*py[j]):0;
         HXY2= -HXY2/Math.log(2);
     }
 

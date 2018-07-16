@@ -4,10 +4,11 @@ import java.util.NoSuchElementException;
 
 public class MaindiagonalTraverser implements MatrixTraverser {
     private int m,n,x,y,k,cnt; //(x,y) is the current cell, k == (x+y)
+    private boolean flag;
     private int[][]id;
 
     private void reset() {
-        x= y= 0; k= x+y; cnt= 0;
+        x= y= 0; k= x+y; cnt= 0; flag= false;
     }
     /**
      * @param m: number of rows
@@ -54,11 +55,18 @@ public class MaindiagonalTraverser implements MatrixTraverser {
             --y; ++x;
             if ( !vc(x,y) ) {
                 ++k;
-                x = 0;
-                y = k - x;
-                if ( !vc(x,y) ) {
-                    y = n - 1;
-                    x = k - y;
+                if ( flag ) {
+                    y= n-1;
+                    x= k-y;
+                }
+                else {
+                    x = 0;
+                    y = k - x;
+                    if (!vc(x, y)) {
+                        flag= true ;
+                        y = n - 1;
+                        x = k - y;
+                    }
                 }
             }
         }
@@ -77,14 +85,22 @@ public class MaindiagonalTraverser implements MatrixTraverser {
     private Pair<Integer,Integer> next( int x, int y ) {
         Pair<Integer,Integer> res= null;
         if ( vc(x,y) && id[x][y] < m*n-1 ) {
+            k= y+x;
             --y; ++x;
             if ( !vc(x,y) ) {
                 ++k;
-                x = 0;
-                y = k - x;
-                if ( !vc(x,y) ) {
-                    y = n - 1;
-                    x = k - y;
+                if ( flag ) {
+                    y= n-1;
+                    x= k-y;
+                }
+                else {
+                    x = 0;
+                    y = k - x;
+                    if (!vc(x, y)) {
+                        flag= true ;
+                        y = n - 1;
+                        x = k - y;
+                    }
                 }
             }
             res= new Pair<>(x,y);
