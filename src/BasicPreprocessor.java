@@ -24,6 +24,7 @@ public class BasicPreprocessor<T extends MatrixTraverser> {
     private DescriptiveStatistics statsPx= new DescriptiveStatistics();
     private DescriptiveStatistics statsPy= new DescriptiveStatistics();
     private DescriptiveStatistics statsPXY= new DescriptiveStatistics();
+    private DescriptiveStatistics statsPij= new DescriptiveStatistics();
 
     BasicPreprocessor( ImageProcessor ip, Class<T> traverserImplClass ) {
         assert ip != null;
@@ -82,7 +83,7 @@ public class BasicPreprocessor<T extends MatrixTraverser> {
                 R+= counts[i][j];
         for ( int i= 0; i < H; ++i )
             for ( int j= 0; j < H; ++j )
-                probabilities[i][j]= counts[i][j]/R;
+                statsPij.addValue(probabilities[i][j]= counts[i][j]/R);
 
         /**
          * calculate marginals
@@ -105,11 +106,9 @@ public class BasicPreprocessor<T extends MatrixTraverser> {
 
         for ( int k= 0; k < H; ++k )
             for ( int i= 0, j; i < H; ++i ) {
-                j= i-k;
-                if ( 0 <= j && j < H )
+                if ( 0 <= (j= (i-k)) && j < H )
                     p_xmy[k]+= probabilities[i][j];
-                j= i+k;
-                if ( 0 <= j && j < H )
+                if ( 0 <= (j= (i+j)) && j < H )
                     p_xmy[k]+= probabilities[i][j];
             }
     }
@@ -140,7 +139,7 @@ public class BasicPreprocessor<T extends MatrixTraverser> {
     private void calcSummary() {
         summary= new HashMap<>();
         double s;
-        int i,j,k,x,y;
+        int i,j,k;
         /**
          * 1. Angular Second Moment [asm]
          */
@@ -164,8 +163,12 @@ public class BasicPreprocessor<T extends MatrixTraverser> {
         summary.put(TextureFeatures.CORRELATION,s);
         /**
          * 4. Sum of squares: Variance [var]
-         * TODO: the formula on website is missing something
+         * FIXME: why only "i" is participating?
          */
+        for ( s= 0, i= 0; i < H; ++i )
+            for ( j= 0; j < H; ++j ) {
+                s+= Math.pow(i-statsPij.getMean(),2)*probabilities[i][j];
+            }
         /**
          * 5. Inverse Difference Moment [idm]
          */
@@ -179,10 +182,7 @@ public class BasicPreprocessor<T extends MatrixTraverser> {
         for ( s= 0, k= 0; k < 2*H-1; ++k )
             s+= k*p_xpy[k];
         summary.put(TextureFeatures.SUM_AVERAGE,s);
-        /**
-         * 7. Sum Variance [sva]
-         * TODO:
-         */
+
         /**
          * 8. Sum Entropy [sen]
          */
@@ -191,6 +191,13 @@ public class BasicPreprocessor<T extends MatrixTraverser> {
             s+= Math.log(arg)*arg;
         }
         summary.put(TextureFeatures.SUM_ENTROPY,s/Math.log(2));
+        /**
+         * 7. Sum Variance [sva]
+         */
+        for ( s= 0, k= 0; k < 2*H-1; ++k )
+            s+= Math.pow(k-summary.get(TextureFeatures.SUM_ENTROPY),2)*p_xpy[k];
+        summary.put(TextureFeatures.SUM_VARIANCE,s);
+
         /**
          * 9. Entropy [ent]
          */
@@ -218,11 +225,14 @@ public class BasicPreprocessor<T extends MatrixTraverser> {
         /**
          * 14. Maximal Correlation Coefficient
          * TODO: use JScience library
+         * FIXME: we are only putting 0.00, for now
          */
+        summary.put(TextureFeatures.F13,0.00);
     }
 
     public double getValue( TextureFeatures feature ) {
         return summary.get(feature);
     }
+
 }
 

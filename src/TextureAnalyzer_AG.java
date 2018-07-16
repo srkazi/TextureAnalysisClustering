@@ -10,6 +10,7 @@ import ij.gui.*;
 import ij.plugin.PlugIn;
 import ij.text.*;
 import ij.measure.ResultsTable;
+import javolution.io.Struct;
 
 enum TextureFeatures {
 
@@ -81,6 +82,12 @@ public class TextureAnalyzer_AG implements PlugInFilter {
                 checked.put(f,Boolean.valueOf(false));
             gd.addCheckbox(f.getDescription(),checked.get(f));
         }
+
+        gd.addCheckbox("row",true);
+        gd.addCheckbox("col",false);
+        gd.addCheckbox("diag1",false);
+        gd.addCheckbox("diag2",false);
+
         gd.showDialog();
         if ( gd.wasCanceled() )
             return false ;

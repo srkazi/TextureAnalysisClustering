@@ -2,7 +2,7 @@ package kz.ag.textureanalysis.utils;
 
 import java.util.NoSuchElementException;
 
-public class AuxiliarydiagonalTraversal implements MatrixTraverser {
+public class AuxiliarydiagonalTraverser implements MatrixTraverser {
     private int m,n,x,y,k,cnt; //(x,y) is the current cell, k == (x+y)
     private int [][]id;
 
@@ -14,7 +14,7 @@ public class AuxiliarydiagonalTraversal implements MatrixTraverser {
      * @param m: number of rows
      * @param n: number of columns
      */
-    public AuxiliarydiagonalTraversal( int m, int n ) {
+    public AuxiliarydiagonalTraverser(int m, int n ) {
         this.m= m; this.n= n;
         reset();
         assert m >= 0 && n >= 0;

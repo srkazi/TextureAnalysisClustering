@@ -1,4 +1,4 @@
-import kz.ag.textureanalysis.utils.AuxiliarydiagonalTraversal
+import kz.ag.textureanalysis.utils.AuxiliarydiagonalTraverser
 import kz.ag.textureanalysis.utils.MatrixTraverser
 import kz.ag.textureanalysis.utils.Pair
 import org.junit.Test
@@ -6,13 +6,13 @@ import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
 
 @RunWith (JUnit4.class)
-class AuxiliarydiagonalTraversalTest extends GroovyTestCase {
+class AuxiliarydiagonalTraverserTest extends GroovyTestCase {
     private int m= 3, n= 4;
-    MatrixTraverser mt= new AuxiliarydiagonalTraversal(m,n);
+    MatrixTraverser mt= new AuxiliarydiagonalTraverser(m,n);
     private int[]ex= [2,1,2,0,1,2,0,1,2,0,1,0] as int[];
     private int[]ey= [0,0,1,0,1,2,1,2,3,2,3,3] as int[];
 
-    public AuxiliarydiagonalTraversalTest() {}
+    public AuxiliarydiagonalTraverserTest() {}
 
     @Test
     void testHasNext() {

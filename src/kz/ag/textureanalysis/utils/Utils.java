@@ -14,7 +14,7 @@ public class Utils {
         if ( cl == MaindiagonalTraverser.class ) {
             boolean res= a.getX()+a.getY() == b.getX()+b.getY();
         }
-        if ( cl == AuxiliarydiagonalTraversal.class ) {
+        if ( cl == AuxiliarydiagonalTraverser.class ) {
             boolean res= a.getX()-a.getY() == b.getX()-b.getY();
         }
         return false ;

@@ -1,0 +1,3 @@
+https://imagej.net/Tips_for_developers
+https://github.com/hadim/imagej-plugin-javafx
+http://imagej.net/ImageJ2
