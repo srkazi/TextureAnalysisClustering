@@ -16,7 +16,7 @@ import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 
 public class BasicPreprocessor {
 
-    private final ImageProcessor ip;
+    private final ImageProcessor original,ip;
     private int m, n, mi, mx, H;
     private double[][] counts, probabilities;
     private double []px,py,p_xpy,p_xmy; //p_{x+y}, p_{x-y}
@@ -26,12 +26,17 @@ public class BasicPreprocessor {
     private DescriptiveStatistics statsPy= new DescriptiveStatistics();
     private DescriptiveStatistics statsPXY= new DescriptiveStatistics();
     private DescriptiveStatistics statsPij= new DescriptiveStatistics();
+    private int [][]g;
+
+    private static final int W= 8;
 
     <T extends MatrixTraverser>
     BasicPreprocessor( ImageProcessor ip, Class<T> traverserImplClass ) {
         assert ip != null;
-        this.ip = ip;
-        traverser= TraverserFactory.buildTraverser(traverserImplClass,m= ip.getHeight(),n= ip.getWidth());
+        this.original= ip;
+        this.ip= original.resize(500);
+        g= this.ip.getIntArray();
+        traverser= TraverserFactory.buildTraverser(traverserImplClass,m= this.ip.getHeight(),n= this.ip.getWidth());
         System.out.printf("m= %d, n= %d\n",m,n);
         setUp();
     }
@@ -41,8 +46,8 @@ public class BasicPreprocessor {
         mx= Integer.MIN_VALUE;
         for ( int i= 0; i < m; ++i )
             for ( int j= 0; j < n; ++j ) {
-                mi= Math.min(mi,ip.getPixel(i,j));
-                mx= Math.max(mx,ip.getPixel(i,j));
+                mi= Math.min(mi,g[i][j]);
+                mx= Math.max(mx,g[i][j]);
             }
         /**
          * Trying to make H = 2^k, and H >= mx+1
@@ -54,6 +59,17 @@ public class BasicPreprocessor {
             H= (1<<H);
         }
         assert 0 == (H & (H-1)): String.format("mi= %d, mx= %d, H is not power of two: %d\n",mi,mx,H);
+
+        /**
+         * normalisation step
+         */
+        for ( int i= 0; i < m; ++i )
+            for ( int j= 0; j < n; ++j ) {
+                g[i][j] = (int) ((((double) g[i][j]) / H) * W);
+                g[i][j]= Math.max(g[i][j],0);
+                g[i][j]= Math.min(g[i][j],W-1);
+            }
+
         counts = new double[H][H];
         probabilities = new double[H][H];
         px= new double[H];
@@ -73,8 +89,8 @@ public class BasicPreprocessor {
         for ( ;traverser.hasNext(); ) {
             prev= cur; cur= traverser.next();
             if ( traverser.areAdjacent(prev,cur) ) {
-                int x= ip.getPixel(cur.getX(),cur.getY());
-                int y= ip.getPixel(prev.getX(),prev.getY());
+                int x= g[cur.getX()][cur.getY()];
+                int y= g[prev.getX()][prev.getY()];
                 assert( !(x >= H || x < 0 || y >= H || y < 0) ): String.format("(%d,%d) is out of bounds",x,y);
                 ++counts[x][y];
                 ++counts[y][x];
@@ -164,7 +180,7 @@ public class BasicPreprocessor {
          */
         for ( s= 0, i= 0; i < H; ++i )
             for ( j= 0; j < H; ++j )
-                s+= i*j*probabilities[i][j]-statsPx.getMean()*statsPy.getMean();
+                s+= (i-statsPx.getMean())*(j-statsPy.getMean())*probabilities[i][j];
         s/= (statsPx.getStandardDeviation()*statsPy.getStandardDeviation());
         summary.put(TextureFeatures.CORRELATION,s);
         /**

@@ -44,8 +44,7 @@ public class BasicPreprocessorTest {
         ImagePlus imagePlus= opener.openImage(imageFilePath);
         assert imagePlus != null;
         ImageProcessor ip= imagePlus.getProcessor();
-        bp= new BasicPreprocessor(ip,AuxiliarydiagonalTraverser.class);
-        System.out.printf("m = %d, n = %d\n",ip.getHeight(),ip.getWidth());
+        bp= new BasicPreprocessor(ip,ColumnwiseTraverser.class);
     }
 
 
