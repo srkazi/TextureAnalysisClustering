@@ -28,13 +28,14 @@ public class BasicPreprocessor {
     private DescriptiveStatistics statsPij= new DescriptiveStatistics();
     private int [][]g;
 
-    private static final int W= 8;
+    private static final int W= 32;
 
     <T extends MatrixTraverser>
     BasicPreprocessor( ImageProcessor ip, Class<T> traverserImplClass ) {
         assert ip != null;
         this.original= ip;
-        this.ip= original.resize(500);
+        //this.ip= original.resize(500);
+        this.ip= original;
         g= this.ip.getIntArray();
         traverser= TraverserFactory.buildTraverser(traverserImplClass,m= this.ip.getHeight(),n= this.ip.getWidth());
         System.out.printf("m= %d, n= %d\n",m,n);
@@ -65,10 +66,11 @@ public class BasicPreprocessor {
          */
         for ( int i= 0; i < m; ++i )
             for ( int j= 0; j < n; ++j ) {
-                g[i][j] = (int) ((((double) g[i][j]) / H) * W);
+                g[i][j] = (int) ((((double) g[i][j]) / mx) * W);
                 g[i][j]= Math.max(g[i][j],0);
                 g[i][j]= Math.min(g[i][j],W-1);
             }
+        H= W;
 
         counts = new double[H][H];
         probabilities = new double[H][H];
@@ -172,15 +174,23 @@ public class BasicPreprocessor {
         /**
          * 2. Contrast [con]
          */
+        /*
         for ( s= 0, k= 0; k < H; ++k )
             s+= Math.pow(k,2)*p_xmy[k];
+            */
+        for ( s= 0, i= 0; i < H; ++i )
+            for ( j= 0; j < H; ++j )
+                if ( i != j )
+                    s+= probabilities[i][j]*Math.pow(i-j,2);
         summary.put(TextureFeatures.CONTRAST,s);
         /**
          * 3. Correlation [cor]
          */
         for ( s= 0, i= 0; i < H; ++i )
             for ( j= 0; j < H; ++j )
-                s+= (i-statsPx.getMean())*(j-statsPy.getMean())*probabilities[i][j];
+                s+= (i*j*probabilities[i][j]);
+        System.out.printf("Here %f %f %f %f\n",statsPx.getMean(),statsPx.getStandardDeviation(),statsPy.getMean(),statsPy.getStandardDeviation());
+        s-= statsPx.getMean()*statsPy.getMean();
         s/= (statsPx.getStandardDeviation()*statsPy.getStandardDeviation());
         summary.put(TextureFeatures.CORRELATION,s);
         /**

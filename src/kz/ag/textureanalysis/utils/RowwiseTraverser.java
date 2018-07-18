@@ -14,6 +14,7 @@ public class RowwiseTraverser implements MatrixTraverser {
      * @param n: number of columns
      */
     public RowwiseTraverser( int m, int n ) {
+        System.out.println(this.getClass().getName());
         this.m= m; this.n= n;
         reset();
         assert m >= 0 && n >= 0;
@@ -63,9 +64,10 @@ public class RowwiseTraverser implements MatrixTraverser {
     @Override
     public boolean areAdjacent(Pair<Integer, Integer> a, Pair<Integer, Integer> b) {
         if ( a == null || b == null ) return false ;
-        Pair<Integer,Integer> na= next(a.getX(),a.getY());
+        /*Pair<Integer,Integer> na= next(a.getX(),a.getY());
         Pair<Integer,Integer> nb= next(b.getX(),b.getY());
-        return na.equals(b) || nb.equals(a);
+        return na.equals(b) || nb.equals(a);*/
+        return a.getX() == b.getX();
     }
 
     private Pair<Integer,Integer> next( int x, int y ) {

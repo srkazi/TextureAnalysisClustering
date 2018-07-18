@@ -16,6 +16,7 @@ public class AuxiliarydiagonalTraverser implements MatrixTraverser {
      * @param n: number of columns
      */
     public AuxiliarydiagonalTraverser(int m, int n ) {
+        System.out.println(this.getClass().getName());
         this.m= m; this.n= n;
         reset();
         assert m >= 0 && n >= 0;
@@ -78,9 +79,10 @@ public class AuxiliarydiagonalTraverser implements MatrixTraverser {
     @Override
     public boolean areAdjacent(Pair<Integer, Integer> a, Pair<Integer, Integer> b) {
         if ( a == null || b == null ) return false ;
-        Pair<Integer,Integer> na= next(a.getX(),a.getY());
-        Pair<Integer,Integer> nb= next(b.getX(),b.getY());
-        return na.equals(b) || nb.equals(a);
+        //Pair<Integer,Integer> na= next(a.getX(),a.getY());
+        //Pair<Integer,Integer> nb= next(b.getX(),b.getY());
+        //return na.equals(b) || nb.equals(a);
+        return a.getY()-a.getX() == b.getY()-b.getX();
     }
 
     private Pair<Integer,Integer> next( int x, int y ) {
