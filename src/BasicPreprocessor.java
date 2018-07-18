@@ -20,6 +20,7 @@ public class BasicPreprocessor {
     private int m, n, mi, mx, H;
     private double[][] counts, probabilities;
     private double []px,py,p_xpy,p_xmy; //p_{x+y}, p_{x-y}
+    private double mux,muy,sigmax,sigmay;
     private MatrixTraverser traverser;
     private double R,HX,HY,HXY,HXY1,HXY2;
     private DescriptiveStatistics statsPx= new DescriptiveStatistics();
@@ -28,7 +29,7 @@ public class BasicPreprocessor {
     private DescriptiveStatistics statsPij= new DescriptiveStatistics();
     private int [][]g;
 
-    private static final int W= 32;
+    private static final int W= 8;
 
     <T extends MatrixTraverser>
     BasicPreprocessor( ImageProcessor ip, Class<T> traverserImplClass ) {
@@ -134,6 +135,33 @@ public class BasicPreprocessor {
                 if ( 0 <= (j= (i+k)) && j < H )
                     p_xmy[k]+= probabilities[i][j];
             }
+
+        for ( int i= 0; i < H; ++i ) {
+            double s= 0;
+            for ( int j= 0; j < H; ++j )
+                s+= probabilities[i][j];
+            mux+= i*s;
+        }
+        for ( int j= 0; j < H; ++j ) {
+            double s= 0;
+            for ( int i= 0; i < H; ++i )
+                s+= probabilities[i][j];
+            muy+= j*s;
+        }
+        for ( int i= 0; i < H; ++i ) {
+            double s= 0;
+            for ( int j= 0; j < H; ++j )
+                s+= probabilities[i][j];
+            sigmax+= Math.pow(i-mux,2)*s;
+        }
+        for ( int j= 0; j < H; ++j ) {
+            double s= 0;
+            for ( int i= 0; i < H; ++i )
+                s+= probabilities[i][j];
+            sigmay+= Math.pow(j-muy,2)*s;
+        }
+        sigmax= Math.sqrt(sigmax);
+        sigmay= Math.sqrt(sigmay);
     }
 
     private void calculateEntropies() {
@@ -174,24 +202,23 @@ public class BasicPreprocessor {
         /**
          * 2. Contrast [con]
          */
-        /*
         for ( s= 0, k= 0; k < H; ++k )
             s+= Math.pow(k,2)*p_xmy[k];
-            */
-        for ( s= 0, i= 0; i < H; ++i )
+        /*for ( s= 0, i= 0; i < H; ++i )
             for ( j= 0; j < H; ++j )
                 if ( i != j )
-                    s+= probabilities[i][j]*Math.pow(i-j,2);
+                    s+= probabilities[i][j]*Math.pow(i-j,2);*/
+        System.out.printf("Contrast: %f\n",s);
         summary.put(TextureFeatures.CONTRAST,s);
         /**
          * 3. Correlation [cor]
          */
         for ( s= 0, i= 0; i < H; ++i )
             for ( j= 0; j < H; ++j )
-                s+= (i*j*probabilities[i][j]);
-        System.out.printf("Here %f %f %f %f\n",statsPx.getMean(),statsPx.getStandardDeviation(),statsPy.getMean(),statsPy.getStandardDeviation());
-        s-= statsPx.getMean()*statsPy.getMean();
-        s/= (statsPx.getStandardDeviation()*statsPy.getStandardDeviation());
+                //s+= (i*j*probabilities[i][j]);
+                s+= (i-mux)*(j-muy)*probabilities[i][j]/sigmax/sigmay;
+        //s-= statsPx.getMean()*statsPy.getMean();
+        //s/= (statsPx.getStandardDeviation()*statsPy.getStandardDeviation());
         summary.put(TextureFeatures.CORRELATION,s);
         /**
          * 4. Sum of squares: Variance [var]

@@ -15,7 +15,6 @@ public class MaindiagonalTraverser implements MatrixTraverser {
      * @param n: number of columns
      */
     public MaindiagonalTraverser( int m, int n ) {
-        System.out.println(this.getClass().getName());
         this.m= m; this.n= n;
         reset();
         assert m >= 0 && n >= 0;
