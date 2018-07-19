@@ -5,6 +5,8 @@ public class Pair<U,V> {
     private U x;
     private V y;
 
+    Pair() { x= null; y= null; }
+
     Pair( U u, V v ) {
         x= u;
         y= v;

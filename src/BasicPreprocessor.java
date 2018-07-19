@@ -14,7 +14,7 @@ import kz.ag.textureanalysis.utils.TraverserFactory;
 import kz.ag.textureanalysis.utils.Utils;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 
-public class BasicPreprocessor {
+public class BasicPreprocessor implements HaralickImageProcessor {
 
     private final ImageProcessor original,ip;
     private int m, n, mi, mx, H;
@@ -289,6 +289,7 @@ public class BasicPreprocessor {
         summary.put(TextureFeatures.F13,0.00);
     }
 
+    @Override
     public double getValue( TextureFeatures feature ) {
         return summary.get(feature);
     }

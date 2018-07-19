@@ -3,7 +3,7 @@ import kz.ag.textureanalysis.utils.*;
 
 import java.util.Map;
 
-public class AggregateProcessor {
+public class AggregateProcessor implements HaralickImageProcessor {
     private BasicPreprocessor bpRows, bpCols, bpMainDiag, bpAuxDiag;
 
     AggregateProcessor( ImageProcessor ip ) {
@@ -13,6 +13,7 @@ public class AggregateProcessor {
         bpAuxDiag= new BasicPreprocessor(ip, AuxiliarydiagonalTraverser.class);
     }
 
+    @Override
     public double getValue( TextureFeatures feature ) {
         return (bpRows.getValue(feature)+bpCols.getValue(feature)+bpMainDiag.getValue(feature)+bpAuxDiag.getValue(feature))/4.00;
     }
