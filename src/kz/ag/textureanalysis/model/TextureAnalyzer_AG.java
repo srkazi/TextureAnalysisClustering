@@ -1,44 +1,13 @@
-/*
+package kz.ag.textureanalysis.model;/*
  * [Haralick Textural Features](http://earlglynn.github.io/RNotes/package/EBImage/Haralick-Textural-Features.html)
  */
 import ij.*;
 import ij.plugin.filter.PlugInFilter;
 import ij.process.*;
-import java.awt.*;
+
 import java.util.*;
 import ij.gui.*;
-import ij.plugin.PlugIn;
-import ij.text.*;
 import ij.measure.ResultsTable;
-import javolution.io.Struct;
-
-enum TextureFeatures {
-
-    ANGULAR_SECOND_MOMENT("Angular Second Moment"),
-    CONTRAST("Contrast"),
-    CORRELATION("Correlation"),
-    SUM_OF_SQUARES("Sum of Squares: Variance"),
-    INVERSE_DIFFERENT_MOMENT("Inverse Different Moment"),
-    SUM_AVERAGE("Sum Average"),
-    SUM_VARIANCE("Sum Variance"),
-    SUM_ENTROPY("Sum Entropy"),
-    ENTROPY("Entropy"),
-    DIFFERENCE_VARIANCE("Difference Variance"),
-    DIFFERENCE_ENTROPY("Difference Entropy"),
-    F12("Information Measure of Correlation: f12"),
-    F13("Information Measure of Correlation: f13"),
-    MAXIMAL_CORRELATION_COEFFICIENT("Maximal Correlation Coefficient");
-
-    private String description;
-
-    private TextureFeatures( String description ) {
-        this.description= description;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-};
 
 public class TextureAnalyzer_AG implements PlugInFilter {
 

@@ -1,12 +1,19 @@
+package kz.ag.textureanalysis.model;
+
 import ij.process.ImageProcessor;
 import kz.ag.textureanalysis.utils.*;
-
-import java.util.Map;
 
 public class AggregateProcessor implements HaralickImageProcessor {
     private BasicPreprocessor bpRows, bpCols, bpMainDiag, bpAuxDiag;
 
-    AggregateProcessor( ImageProcessor ip ) {
+    public AggregateProcessor( int [][]window ) {
+        bpRows= new BasicPreprocessor(window, RowwiseTraverser.class);
+        bpCols= new BasicPreprocessor(window, ColumnwiseTraverser.class);
+        bpMainDiag= new BasicPreprocessor(window, MaindiagonalTraverser.class);
+        bpAuxDiag= new BasicPreprocessor(window, AuxiliarydiagonalTraverser.class);
+    }
+
+    public AggregateProcessor( ImageProcessor ip ) {
         bpRows= new BasicPreprocessor(ip, RowwiseTraverser.class);
         bpCols= new BasicPreprocessor(ip, ColumnwiseTraverser.class);
         bpMainDiag= new BasicPreprocessor(ip, MaindiagonalTraverser.class);

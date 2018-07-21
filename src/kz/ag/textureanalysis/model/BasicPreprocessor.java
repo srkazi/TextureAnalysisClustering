@@ -1,13 +1,9 @@
-import com.sun.deploy.ui.UITextArea;
-import ij.*;
-import ij.plugin.filter.PlugInFilter;
+package kz.ag.textureanalysis.model;
+
 import ij.process.*;
-import java.awt.*;
+
 import java.util.*;
-import ij.gui.*;
-import ij.plugin.PlugIn;
-import ij.text.*;
-import ij.measure.ResultsTable;
+
 import kz.ag.textureanalysis.utils.MatrixTraverser;
 import kz.ag.textureanalysis.utils.Pair;
 import kz.ag.textureanalysis.utils.TraverserFactory;
@@ -31,7 +27,7 @@ public class BasicPreprocessor implements HaralickImageProcessor {
 
     private static final int W= 8;
 
-    <T extends MatrixTraverser>
+    public <T extends MatrixTraverser>
     BasicPreprocessor( ImageProcessor ip, Class<T> traverserImplClass ) {
         assert ip != null;
         this.original= ip;
@@ -39,7 +35,16 @@ public class BasicPreprocessor implements HaralickImageProcessor {
         this.ip= original;
         g= this.ip.getIntArray();
         traverser= TraverserFactory.buildTraverser(traverserImplClass,m= this.ip.getHeight(),n= this.ip.getWidth());
-        System.out.printf("m= %d, n= %d\n",m,n);
+        setUp();
+    }
+
+    public <T extends MatrixTraverser>
+    BasicPreprocessor( int[][] window, Class<T> traverserImplClass ) {
+        this.original= null;
+        //this.ip= original.resize(500);
+        this.ip= original;
+        g= window;
+        traverser= TraverserFactory.buildTraverser(traverserImplClass,m= window.length,n= window[0].length);
         setUp();
     }
 

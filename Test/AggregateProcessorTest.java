@@ -1,7 +1,8 @@
 import ij.ImagePlus;
 import ij.io.Opener;
 import ij.process.ImageProcessor;
-import kz.ag.textureanalysis.utils.ColumnwiseTraverser;
+import kz.ag.textureanalysis.model.AggregateProcessor;
+import kz.ag.textureanalysis.model.TextureFeatures;
 import kz.ag.textureanalysis.utils.Utils;
 import org.junit.Before;
 import org.junit.Test;

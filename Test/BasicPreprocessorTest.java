@@ -1,6 +1,8 @@
 import ij.ImagePlus;
 import ij.io.Opener;
 import ij.process.ImageProcessor;
+import kz.ag.textureanalysis.model.BasicPreprocessor;
+import kz.ag.textureanalysis.model.TextureFeatures;
 import kz.ag.textureanalysis.utils.*;
 import org.junit.Before;
 import org.junit.Test;

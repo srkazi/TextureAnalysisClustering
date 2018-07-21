@@ -1,3 +1,5 @@
+package kz.ag.textureanalysis.model;
+
 import kz.ag.textureanalysis.utils.Pair;
 import org.apache.commons.math3.ml.clustering.Clusterable;
 
